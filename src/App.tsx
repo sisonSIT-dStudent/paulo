@@ -67,8 +67,16 @@ export default function App() {
   const [filter, setFilter] = useState<'available' | 'sold'>('available');
   const [selectedShoe, setSelectedShoe] = useState<Shoe | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  
+  // 1. ADDED SEARCH STATE
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredShoes = SHOE_DATA.filter(shoe => shoe.status === filter);
+  // 2. UPDATED LOGIC (Filters by Status AND Search Term)
+  const filteredShoes = SHOE_DATA.filter(shoe => {
+    const matchesStatus = shoe.status === filter;
+    const matchesSearch = shoe.model.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
 
   const openShowcase = (shoe: Shoe) => {
     setSelectedShoe(shoe);
@@ -87,6 +95,18 @@ export default function App() {
           <p className="text-zinc-400 font-medium tracking-widest mt-2 uppercase text-sm">
             Quality shoes | Baguio City 
           </p>
+
+          {/* 3. SEARCH BAR (Matches your existing UI perfectly) */}
+          <div className="w-full max-w-md mt-10 relative">
+            <input 
+              type="text"
+              placeholder="SEARCH KICKS..."
+              className="w-full bg-zinc-900 border border-zinc-800 focus:border-orange-500/50 rounded-2xl py-4 px-6 outline-none transition-all duration-300 text-[10px] font-black tracking-widest uppercase placeholder:text-zinc-600 focus:bg-zinc-900/80 shadow-2xl"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <span className="absolute right-5 top-1/2 -translate-y-1/2 opacity-30">🔍</span>
+          </div>
           
           <div className="flex bg-zinc-900 p-1.5 rounded-2xl border border-zinc-800 mt-8 shadow-2xl">
              {['available', 'sold'].map((tab) => (
@@ -103,37 +123,44 @@ export default function App() {
         </header>
 
         <main className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-          {filteredShoes.map((shoe) => (
-            <div key={shoe.id} className="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-orange-500/50 cursor-pointer" onClick={() => openShowcase(shoe)}>
-              <div className="relative overflow-hidden aspect-[4/5]">
-                <img 
-                  src={shoe.image} 
-                  className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${shoe.status === 'sold' ? 'grayscale opacity-50' : ''}`} 
-                  alt={shoe.model} 
-                />
-                {shoe.status === 'sold' && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                     <span className="bg-white text-black font-black px-3 py-1 -rotate-12 uppercase text-sm">Sold Out</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="p-4">
-                <div className="flex flex-col gap-1 mb-3">
-                  <h3 className="font-bold text-sm uppercase leading-tight truncate">{shoe.model}</h3>
-                  <span className="inline-block w-fit bg-zinc-800 text-orange-400 text-[9px] font-bold px-1.5 py-0.5 rounded">US {shoe.size}</span>
+          {/* 4. CHANGED: Now mapping the 'filteredShoes' instead of just 'SHOE_DATA' */}
+          {filteredShoes.length > 0 ? (
+            filteredShoes.map((shoe) => (
+              <div key={shoe.id} className="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-orange-500/50 cursor-pointer" onClick={() => openShowcase(shoe)}>
+                <div className="relative overflow-hidden aspect-[4/5]">
+                  <img 
+                    src={shoe.image} 
+                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${shoe.status === 'sold' ? 'grayscale opacity-50' : ''}`} 
+                    alt={shoe.model} 
+                  />
+                  {shoe.status === 'sold' && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                       <span className="bg-white text-black font-black px-3 py-1 -rotate-12 uppercase text-sm">Sold Out</span>
+                    </div>
+                  )}
                 </div>
-                <p className="text-lg font-black text-white">₱{shoe.price.toLocaleString()}</p>
-                
-                <button 
-                  disabled={shoe.status === 'sold'}
-                  className="w-full mt-4 py-2.5 font-black uppercase rounded-xl tracking-wider text-[10px] transition-all bg-white text-black disabled:bg-zinc-800 disabled:text-zinc-600 group-hover:bg-orange-500 group-hover:text-white"
-                >
-                  {shoe.status === 'available' ? 'Inquire' : 'Out of Stock'}
-                </button>
+
+                <div className="p-4">
+                  <div className="flex flex-col gap-1 mb-3">
+                    <h3 className="font-bold text-sm uppercase leading-tight truncate">{shoe.model}</h3>
+                    <span className="inline-block w-fit bg-zinc-800 text-orange-400 text-[9px] font-bold px-1.5 py-0.5 rounded">US {shoe.size}</span>
+                  </div>
+                  <p className="text-lg font-black text-white">₱{shoe.price.toLocaleString()}</p>
+                  
+                  <button 
+                    disabled={shoe.status === 'sold'}
+                    className="w-full mt-4 py-2.5 font-black uppercase rounded-xl tracking-wider text-[10px] transition-all bg-white text-black disabled:bg-zinc-800 disabled:text-zinc-600 group-hover:bg-orange-500 group-hover:text-white"
+                  >
+                    {shoe.status === 'available' ? 'Inquire' : 'Out of Stock'}
+                  </button>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="col-span-full py-20 text-center">
+               <p className="text-zinc-600 font-black uppercase tracking-[0.3em] text-[10px]">No results for "{searchTerm}"</p>
             </div>
-          ))}
+          )}
         </main>
 
         {selectedShoe && (
@@ -168,7 +195,6 @@ export default function App() {
 
                   {selectedShoe.media.length > 1 && (
                     <>
-                      {/* Left Arrow Button */}
                       <button 
                         onClick={(e) => { e.stopPropagation(); setCurrentSlide(prev => (prev > 0 ? prev - 1 : selectedShoe.media.length - 1))}}
                         className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-orange-600/30 p-2.5 rounded-full backdrop-blur-md transition-all z-10 flex items-center justify-center group"
@@ -178,7 +204,6 @@ export default function App() {
                         </svg>
                       </button>
                       
-                      {/* Right Arrow Button */}
                       <button 
                         onClick={(e) => { e.stopPropagation(); setCurrentSlide(prev => (prev < selectedShoe.media.length - 1 ? prev + 1 : 0))}}
                         className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-orange-600/30 p-2.5 rounded-full backdrop-blur-md transition-all z-10 flex items-center justify-center group"
