@@ -1,4 +1,5 @@
 import { useState } from 'react'
+// DOUBLE CHECK: Ensure your folder is 'pages' (lowercase) and file is 'navbar.tsx'
 import Navbar from './pages/navbar'
 
 interface MediaItem {
@@ -67,11 +68,8 @@ export default function App() {
   const [filter, setFilter] = useState<'available' | 'sold'>('available');
   const [selectedShoe, setSelectedShoe] = useState<Shoe | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  
-  // 1. ADDED SEARCH STATE
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 2. UPDATED LOGIC (Filters by Status AND Search Term)
   const filteredShoes = SHOE_DATA.filter(shoe => {
     const matchesStatus = shoe.status === filter;
     const matchesSearch = shoe.model.toLowerCase().includes(searchTerm.toLowerCase());
@@ -96,12 +94,11 @@ export default function App() {
             Quality shoes | Baguio City 
           </p>
 
-          {/* 3. SEARCH BAR (Matches your existing UI perfectly) */}
           <div className="w-full max-w-md mt-10 relative">
             <input 
               type="text"
               placeholder="SEARCH KICKS..."
-              className="w-full bg-zinc-900 border border-zinc-800 focus:border-orange-500/50 rounded-2xl py-4 px-6 outline-none transition-all duration-300 text-[10px] font-black tracking-widest uppercase placeholder:text-zinc-600 focus:bg-zinc-900/80 shadow-2xl"
+              className="w-full bg-zinc-900 border border-zinc-800 focus:border-orange-500/50 rounded-2xl py-4 px-6 outline-none transition-all duration-300 text-[10px] font-black tracking-widest uppercase placeholder:text-zinc-600 shadow-2xl"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -123,58 +120,51 @@ export default function App() {
         </header>
 
         <main className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-          {/* 4. CHANGED: Now mapping the 'filteredShoes' instead of just 'SHOE_DATA' */}
-          {filteredShoes.length > 0 ? (
-            filteredShoes.map((shoe) => (
-              <div key={shoe.id} className="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-orange-500/50 cursor-pointer" onClick={() => openShowcase(shoe)}>
-                <div className="relative overflow-hidden aspect-[4/5]">
-                  <img 
-                    src={shoe.image} 
-                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${shoe.status === 'sold' ? 'grayscale opacity-50' : ''}`} 
-                    alt={shoe.model} 
-                  />
-                  {shoe.status === 'sold' && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                       <span className="bg-white text-black font-black px-3 py-1 -rotate-12 uppercase text-sm">Sold Out</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-4">
-                  <div className="flex flex-col gap-1 mb-3">
-                    <h3 className="font-bold text-sm uppercase leading-tight truncate">{shoe.model}</h3>
-                    <span className="inline-block w-fit bg-zinc-800 text-orange-400 text-[9px] font-bold px-1.5 py-0.5 rounded">US {shoe.size}</span>
+          {filteredShoes.map((shoe) => (
+            <div key={shoe.id} className="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-orange-500/50 cursor-pointer" onClick={() => openShowcase(shoe)}>
+              <div className="relative overflow-hidden aspect-[4/5]">
+                <img 
+                  src={shoe.image} 
+                  className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${shoe.status === 'sold' ? 'grayscale opacity-50' : ''}`} 
+                  alt={shoe.model} 
+                />
+                {shoe.status === 'sold' && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                     <span className="bg-white text-black font-black px-3 py-1 -rotate-12 uppercase text-sm">Sold Out</span>
                   </div>
-                  <p className="text-lg font-black text-white">₱{shoe.price.toLocaleString()}</p>
-                  
-                  <button 
-                    disabled={shoe.status === 'sold'}
-                    className="w-full mt-4 py-2.5 font-black uppercase rounded-xl tracking-wider text-[10px] transition-all bg-white text-black disabled:bg-zinc-800 disabled:text-zinc-600 group-hover:bg-orange-500 group-hover:text-white"
-                  >
-                    {shoe.status === 'available' ? 'Inquire' : 'Out of Stock'}
-                  </button>
-                </div>
+                )}
               </div>
-            ))
-          ) : (
-            <div className="col-span-full py-20 text-center">
-               <p className="text-zinc-600 font-black uppercase tracking-[0.3em] text-[10px]">No results for "{searchTerm}"</p>
+
+              <div className="p-4">
+                <div className="flex flex-col gap-1 mb-3">
+                  <h3 className="font-bold text-sm uppercase leading-tight truncate">{shoe.model}</h3>
+                  <span className="inline-block w-fit bg-zinc-800 text-orange-400 text-[9px] font-bold px-1.5 py-0.5 rounded">US {shoe.size}</span>
+                </div>
+                <p className="text-lg font-black text-white">₱{shoe.price.toLocaleString()}</p>
+                
+                <button 
+                  disabled={shoe.status === 'sold'}
+                  className="w-full mt-4 py-2.5 font-black uppercase rounded-xl tracking-wider text-[10px] transition-all bg-white text-black disabled:bg-zinc-800 disabled:text-zinc-600 group-hover:bg-orange-500 group-hover:text-white"
+                >
+                  {shoe.status === 'available' ? 'Inquire' : 'Out of Stock'}
+                </button>
+              </div>
             </div>
-          )}
+          ))}
         </main>
 
         {selectedShoe && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative animate-in fade-in zoom-in duration-300">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative shadow-2xl">
               <button 
                 onClick={() => setSelectedShoe(null)} 
-                className="absolute top-4 right-4 z-50 bg-white text-black w-8 h-8 rounded-full font-black hover:bg-orange-500 hover:text-white transition-all shadow-xl flex items-center justify-center"
+                className="absolute top-4 right-4 z-50 bg-white text-black w-8 h-8 rounded-full font-black hover:bg-orange-500 hover:text-white transition-all flex items-center justify-center"
               >✕</button>
               
-              <div className="grid md:grid-cols-2 h-full overflow-y-auto md:overflow-hidden">
+              {/* FIXED: overflow-x-hidden on this container prevents the side-to-side wiggle */}
+              <div className="grid md:grid-cols-2 h-full overflow-y-auto md:overflow-hidden w-full overflow-x-hidden">
                 
-                <div className="relative bg-black flex items-center justify-center border-b md:border-b-0 md:border-r border-zinc-800 overflow-hidden min-h-[350px] md:min-h-0">
-                  
+                <div className="relative bg-black flex items-center justify-center border-b md:border-b-0 md:border-r border-zinc-800 overflow-hidden min-h-[350px] md:min-h-0 w-full">
                   {selectedShoe.media[currentSlide].type === 'video' ? (
                     <video 
                       key={selectedShoe.media[currentSlide].url}
@@ -183,6 +173,7 @@ export default function App() {
                       autoPlay 
                       muted
                       playsInline 
+                      loop
                       className="w-full h-full max-h-[80vh] md:max-h-full object-contain"
                     />
                   ) : (
@@ -197,7 +188,7 @@ export default function App() {
                     <>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setCurrentSlide(prev => (prev > 0 ? prev - 1 : selectedShoe.media.length - 1))}}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-orange-600/30 p-2.5 rounded-full backdrop-blur-md transition-all z-10 flex items-center justify-center group"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 p-2.5 rounded-full backdrop-blur-md z-10"
                       >
                         <svg className="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
@@ -206,7 +197,7 @@ export default function App() {
                       
                       <button 
                         onClick={(e) => { e.stopPropagation(); setCurrentSlide(prev => (prev < selectedShoe.media.length - 1 ? prev + 1 : 0))}}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-orange-600/30 p-2.5 rounded-full backdrop-blur-md transition-all z-10 flex items-center justify-center group"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 p-2.5 rounded-full backdrop-blur-md z-10"
                       >
                         <svg className="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
@@ -225,14 +216,14 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="p-8 md:p-10 flex flex-col justify-center bg-zinc-900">
+                <div className="p-8 md:p-10 flex flex-col justify-center bg-zinc-900 w-full">
                   <h2 className="text-3xl font-black uppercase text-orange-500 italic leading-none mb-4 tracking-tighter">
                     {selectedShoe.model}
                   </h2>
                   
                   <div className="flex gap-2 mb-6">
-                    <span className="bg-zinc-800 text-zinc-400 text-[9px] font-black px-2 py-1 rounded-md">SIZE: {selectedShoe.size}</span>
-                    <span className="bg-zinc-800 text-zinc-400 text-[9px] font-black px-2 py-1 rounded-md">COND: {selectedShoe.condition}</span>
+                    <span className="bg-zinc-800 text-zinc-400 text-[9px] font-black px-2 py-1 rounded-md uppercase">SIZE: {selectedShoe.size}</span>
+                    <span className="bg-zinc-800 text-zinc-400 text-[9px] font-black px-2 py-1 rounded-md uppercase">COND: {selectedShoe.condition}</span>
                   </div>
 
                   <p className="text-zinc-400 text-sm leading-relaxed mb-8 border-l-2 border-orange-500 pl-4">
