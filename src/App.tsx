@@ -1,64 +1,82 @@
 import { useState } from 'react'
 import Navbar from './pages/navbar'
 
-// 1. TYPE DEFINITION
+interface MediaItem {
+  type: 'video' | 'image';
+  url: string;
+}
+
 interface Shoe {
   id: number;
   model: string;
   price: number;
   size: string;
   status: 'available' | 'sold';
-  image: string;
+  image: string; 
   condition: string;
   description: string;
-  videoUrl: string;
+  media: MediaItem[]; 
 }
 
-// 2. DATA
 const SHOE_DATA: Shoe[] = [
   { 
     id: 1, 
-    model: "practice lng ", 
+    model: "practice lng", 
     price: 15500, 
     size: "8.5", 
     status: 'sold', 
     condition: "Deadstock", 
     image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=500",
     description: "",
-    videoUrl: "/videos/16-7_SG2-146047508_01.webm" 
+    media: [
+      { type: 'video', url: "/videos/16-7_SG2-146047508_01.webm" },
+      { type: 'image', url: "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=500" }
+    ]
   },
   { 
     id: 2, 
-    model: "1", 
-    price: 8500, 
+    model: "wan", 
+    price: 8500123123, 
     size: "8.5", 
     status: 'available', 
     condition: "9/10 PADS", 
     image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=500",
     description: "",
-    videoUrl: "/videos/16-7_SG2-146047508_01.webm" 
+    media: [
+      { type: 'video', url: "/videos/16-7_SG2-146047508_01.webm" },
+      { type: 'image', url: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=500" }
+    ]
   },
   { 
     id: 3, 
-    model: "2", 
-    price: 11000, 
+    model: "dos", 
+    price: 110001231234, 
     size: "8.5", 
     status: 'available', 
     condition: "VNDS", 
     image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=500",
-    description: "Premium rough-cut overlays. Elite comfort with a rugged edge.",
-    videoUrl: "/videos/16-7_SG2-146047508_01.webm"
+    description: "",
+    media: [
+      { type: 'video', url: "/videos/16-7_SG2-146047508_01.webm" },
+      { type: 'image', url: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=500" }
+    ]
   },
 ];
 
 export default function App() {
   const [filter, setFilter] = useState<'available' | 'sold'>('available');
   const [selectedShoe, setSelectedShoe] = useState<Shoe | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const filteredShoes = SHOE_DATA.filter(shoe => shoe.status === filter);
 
+  const openShowcase = (shoe: Shoe) => {
+    setSelectedShoe(shoe);
+    setCurrentSlide(0);
+  };
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans overflow-x-hidden">
       <Navbar />
       
       <div className="p-4 md:p-10 pt-20"> 
@@ -86,7 +104,7 @@ export default function App() {
 
         <main className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
           {filteredShoes.map((shoe) => (
-            <div key={shoe.id} className="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-orange-500/50">
+            <div key={shoe.id} className="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-orange-500/50 cursor-pointer" onClick={() => openShowcase(shoe)}>
               <div className="relative overflow-hidden aspect-[4/5]">
                 <img 
                   src={shoe.image} 
@@ -108,9 +126,8 @@ export default function App() {
                 <p className="text-lg font-black text-white">₱{shoe.price.toLocaleString()}</p>
                 
                 <button 
-                  onClick={() => setSelectedShoe(shoe)}
                   disabled={shoe.status === 'sold'}
-                  className="w-full mt-4 py-2.5 font-black uppercase rounded-xl tracking-wider text-[10px] transition-all bg-white text-black disabled:bg-zinc-800 disabled:text-zinc-600"
+                  className="w-full mt-4 py-2.5 font-black uppercase rounded-xl tracking-wider text-[10px] transition-all bg-white text-black disabled:bg-zinc-800 disabled:text-zinc-600 group-hover:bg-orange-500 group-hover:text-white"
                 >
                   {shoe.status === 'available' ? 'Inquire' : 'Out of Stock'}
                 </button>
@@ -119,28 +136,70 @@ export default function App() {
           ))}
         </main>
 
-        {/* 3. ADAPTIVE SHOWCASE MODAL */}
         {selectedShoe && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
             <div className="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative animate-in fade-in zoom-in duration-300">
               <button 
                 onClick={() => setSelectedShoe(null)} 
-                className="absolute top-4 right-4 z-20 bg-white text-black w-8 h-8 rounded-full font-black hover:bg-orange-500 hover:text-white transition-all shadow-xl"
+                className="absolute top-4 right-4 z-50 bg-white text-black w-8 h-8 rounded-full font-black hover:bg-orange-500 hover:text-white transition-all shadow-xl flex items-center justify-center"
               >✕</button>
               
               <div className="grid md:grid-cols-2 h-full overflow-y-auto md:overflow-hidden">
-                {/* VIDEO DISPLAY - ADAPTIVE HEIGHT */}
-                <div className="bg-black flex items-center justify-center border-b md:border-b-0 md:border-r border-zinc-800 min-h-[400px] md:min-h-0">
-                  <video 
-                    src={selectedShoe.videoUrl} 
-                    controls 
-                    autoPlay 
-                    playsInline 
-                    className="w-full h-full max-h-full object-contain"
-                  />
+                
+                <div className="relative bg-black flex items-center justify-center border-b md:border-b-0 md:border-r border-zinc-800 overflow-hidden min-h-[350px] md:min-h-0">
+                  
+                  {selectedShoe.media[currentSlide].type === 'video' ? (
+                    <video 
+                      key={selectedShoe.media[currentSlide].url}
+                      src={selectedShoe.media[currentSlide].url} 
+                      controls 
+                      autoPlay 
+                      muted
+                      playsInline 
+                      className="w-full h-full max-h-[80vh] md:max-h-full object-contain"
+                    />
+                  ) : (
+                    <img 
+                      src={selectedShoe.media[currentSlide].url} 
+                      className="w-full h-full max-h-[80vh] md:max-h-full object-contain"
+                      alt="Product View"
+                    />
+                  )}
+
+                  {selectedShoe.media.length > 1 && (
+                    <>
+                      {/* Left Arrow Button */}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setCurrentSlide(prev => (prev > 0 ? prev - 1 : selectedShoe.media.length - 1))}}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-orange-600/30 p-2.5 rounded-full backdrop-blur-md transition-all z-10 flex items-center justify-center group"
+                      >
+                        <svg className="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+                        </svg>
+                      </button>
+                      
+                      {/* Right Arrow Button */}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setCurrentSlide(prev => (prev < selectedShoe.media.length - 1 ? prev + 1 : 0))}}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-orange-600/30 p-2.5 rounded-full backdrop-blur-md transition-all z-10 flex items-center justify-center group"
+                      >
+                        <svg className="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                        </svg>
+                      </button>
+                    </>
+                  )}
+
+                  <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2">
+                    {selectedShoe.media.map((_, idx) => (
+                      <div 
+                        key={idx}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentSlide ? 'bg-orange-500 w-4' : 'bg-white/30 w-1.5'}`}
+                      />
+                    ))}
+                  </div>
                 </div>
 
-                {/* DETAILS PANEL */}
                 <div className="p-8 md:p-10 flex flex-col justify-center bg-zinc-900">
                   <h2 className="text-3xl font-black uppercase text-orange-500 italic leading-none mb-4 tracking-tighter">
                     {selectedShoe.model}
@@ -152,7 +211,7 @@ export default function App() {
                   </div>
 
                   <p className="text-zinc-400 text-sm leading-relaxed mb-8 border-l-2 border-orange-500 pl-4">
-                    {selectedShoe.description}
+                    {selectedShoe.description || "No description provided."}
                   </p>
 
                   <div className="mt-auto">
@@ -162,7 +221,8 @@ export default function App() {
                     <a 
                       href="https://www.instagram.com/pjs_shoes" 
                       target="_blank"
-                      className="block w-full py-4 bg-orange-600 text-white font-black uppercase rounded-2xl tracking-[0.2em] text-[10px] text-center hover:bg-orange-500 transition-all shadow-lg shadow-orange-900/20"
+                      rel="noopener noreferrer"
+                      className="block w-full py-4 bg-orange-600 text-white font-black uppercase rounded-2xl tracking-[0.2em] text-[10px] text-center hover:bg-orange-500 transition-all shadow-lg"
                     >
                       Inquire on Instagram
                     </a>
