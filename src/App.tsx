@@ -1,5 +1,4 @@
 import { useState } from 'react'
-// DOUBLE CHECK: Ensure your folder is 'pages' (lowercase) and file is 'navbar.tsx'
 import Navbar from './pages/navbar'
 
 interface MediaItem {
@@ -28,7 +27,7 @@ const SHOE_DATA: Shoe[] = [
     status: 'sold', 
     condition: "Deadstock", 
     image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=500",
-    description: "",
+    description: "Premium quality selection. Grab it while it lasts.",
     media: [
       { type: 'video', url: "/videos/16-7_SG2-146047508_01.webm" },
       { type: 'image', url: "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=500" }
@@ -36,27 +35,27 @@ const SHOE_DATA: Shoe[] = [
   },
   { 
     id: 2, 
-    model: "wan", 
-    price: 8500123123, 
+    model: "nike cortez", 
+    price: 1200, 
     size: "8.5", 
     status: 'available', 
     condition: "9/10 PADS", 
-    image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=500",
-    description: "",
+    image: "/images/nike cortez.webp",
+    description: "Classic Cortez silhouette. Essential for the collection.",
     media: [
-      { type: 'video', url: "/videos/16-7_SG2-146047508_01.webm" },
-      { type: 'image', url: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=500" }
+      { type: 'image', url: "/images/nike cortez.webp" },
+      { type: 'video', url: "/videos/16-7_SG2-146047508_01.webm" }
     ]
   },
   { 
     id: 3, 
     model: "dos", 
-    price: 110001231234, 
+    price: 11000, 
     size: "8.5", 
     status: 'available', 
     condition: "VNDS", 
     image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=500",
-    description: "",
+    description: "High-end style for the Baguio streets.",
     media: [
       { type: 'video', url: "/videos/16-7_SG2-146047508_01.webm" },
       { type: 'image', url: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=500" }
@@ -161,7 +160,6 @@ export default function App() {
                 className="absolute top-4 right-4 z-50 bg-white text-black w-8 h-8 rounded-full font-black hover:bg-orange-500 hover:text-white transition-all flex items-center justify-center"
               >✕</button>
               
-              {/* FIXED: overflow-x-hidden on this container prevents the side-to-side wiggle */}
               <div className="grid md:grid-cols-2 h-full overflow-y-auto md:overflow-hidden w-full overflow-x-hidden">
                 
                 <div className="relative bg-black flex items-center justify-center border-b md:border-b-0 md:border-r border-zinc-800 overflow-hidden min-h-[350px] md:min-h-0 w-full">
@@ -169,11 +167,13 @@ export default function App() {
                     <video 
                       key={selectedShoe.media[currentSlide].url}
                       src={selectedShoe.media[currentSlide].url} 
+                      poster={selectedShoe.image} // Fallback image for Low Power Mode
                       controls 
                       autoPlay 
                       muted
                       playsInline 
                       loop
+                      preload="auto"
                       className="w-full h-full max-h-[80vh] md:max-h-full object-contain"
                     />
                   ) : (
